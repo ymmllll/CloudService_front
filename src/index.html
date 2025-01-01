@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>虚拟机控制</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+    }
+    .sidebar {
+      width: 200px;
+      background-color: #2c3e50;
+      color: #ecf0f1;
+      height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .sidebar a {
+      display: block;
+      color: #ecf0f1;
+      text-decoration: none;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+      cursor: pointer;
+    }
+    .sidebar a:hover {
+      background-color: #34495e;
+    }
+    .content {
+      flex-grow: 1;
+      padding: 20px;
+    }
+    .page {
+      display: none;
+    }
+    .page.active {
+      display: block;
+    }
+
+    /* 更新后的表格样式 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table th, table td {
+      padding: 8px;
+      text-align: center;
+    }
+    table th {
+      background-color: white;
+      color: #333;
+    }
+    table td {
+      border-top: 1px solid #ddd;  /* 只保留上下的横线 */
+    }
+    table tr:first-child td {
+      border-top: none;  /* 去掉第一行的横线 */
+    }
+    table tr:last-child td {
+      border-bottom: none;  /* 去掉最后一行的横线 */
+    }
+    table td:first-child {
+      border-left: none; /* 去掉竖向的边框 */
+    }
+    table td:last-child {
+      border-right: none; /* 去掉竖向的边框 */
+    }
+
+    .loading {
+      font-size: 16px;
+      color: #555;
+    }
+  </style>
+
+</head>
+<body>
+<div class="sidebar">
+  <a href="#" onclick="showPage('vmControl')">虚拟机控制</a>
+  <a href="#" onclick="showPage('snapshotBackup')">快照备份</a>
+  <a href="#" onclick="showPage('vlanDivision')">VLAN划分</a>
+</div>
+<div class="content">
+  <!-- 虚拟机控制 -->
+  <div id="vmControl" class="page active">
+    <h1>虚拟机控制</h1>
+    <p>请选择一个虚拟机：</p>
+    <div id="vmLoading" class="loading">正在加载虚拟机信息，请稍候...</div>
+    <table id="vmTable" style="display: none;">
+      <thead>
+      <tr>
+        <th>选择</th>
+        <th>虚拟机名称</th>
+        <th>状态</th>
+      </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 快照备份 -->
+  <div id="snapshotBackup" class="page">
+    <h1>快照备份</h1>
+    <p>这里是快照备份的内容。</p>
+  </div>
+
+  <!-- VLAN划分 -->
+  <div id="vlanDivision" class="page">
+    <h1>VLAN划分</h1>
+    <p>这里是VLAN划分的内容。</p>
+  </div>
+</div>
+
+<script>
+  function showPage(pageId) {
+    event.preventDefault();
+    const pages = document.querySelectorAll('.page');
+    pages.forEach(page => page.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+  }
+
+  // 获取虚拟机信息
+  async function loadVMData() {
+    const vmLoading = document.getElementById("vmLoading");
+    const vmTable = document.getElementById("vmTable");
+    const tbody = vmTable.querySelector("tbody");
+
+    try {
+      // 请求后端 API
+      const response = await fetch("https://apifoxmock.com/m2/5694983-5376008-default/249761979?url=qemu:///system");
+      const vmData = await response.json();
+
+      // 隐藏加载提示
+      vmLoading.style.display = "none";
+      vmTable.style.display = "table";
+
+      // 填充表格数据
+      tbody.innerHTML = ""; // 清空现有内容
+      vmData.forEach(vm => {
+        const row = document.createElement("tr");
+
+        // 单选按钮
+        const radioCell = document.createElement("td");
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = "vmSelect";
+        radio.value = vm.id;
+        radioCell.appendChild(radio);
+        row.appendChild(radioCell);
+
+        // 虚拟机名称
+        const nameCell = document.createElement("td");
+        nameCell.textContent = vm.name;
+        row.appendChild(nameCell);
+
+        // 虚拟机状态
+        const statusCell = document.createElement("td");
+        statusCell.textContent = vm.status;
+        row.appendChild(statusCell);
+
+        tbody.appendChild(row);
+      });
+    } catch (error) {
+      console.error("获取虚拟机数据失败:", error);
+      vmLoading.textContent = "加载虚拟机信息失败，请检查网络或后端服务。";
+    }
+  }
+
+  // 加载虚拟机数据时触发
+  document.addEventListener("DOMContentLoaded", loadVMData);
+</script>
+</body>
+</html>
