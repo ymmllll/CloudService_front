@@ -1,0 +1,191 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  padding-top: 60px;
+}
+.header {
+  width: 100%;
+  background-color: white; /* 白色背景 */
+  padding: 15px 20px; /* 上下左右的内边距 */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-family: Arial, sans-serif; /* 字体 */
+  position: fixed; /* 固定在页面顶部 */
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+.system-name {
+  font-size: 24px;
+  font-weight: bold;
+
+  color: #3498db;
+}
+.sidebar {
+  width: 200px;
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+.sidebar a {
+  display: block;
+  color: #ecf0f1;
+  text-decoration: none;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+  cursor: pointer;
+}
+.sidebar a:hover {
+  background-color: #34495e;
+}
+.content {
+  flex-grow: 1;
+  padding: 20px;
+}
+.page {
+  display: none;
+}
+.page.active {
+  display: block;
+}
+/* 按钮样式 */
+.buttons {
+  margin-bottom: 20px; /* 按钮与表格之间的间距 */
+}
+
+.buttons button {
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  margin-right: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.buttons button:hover {
+  background-color: #2980b9;
+}
+
+/* 为按钮设置样式 */
+button {
+  background: none;
+  border: none;
+  color: #2980b9;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 13px;
+}
+
+button:hover {
+  color: darkblue; /* 鼠标悬停时改变文字颜色 */
+  text-decoration: none; /* 去掉下划线 */
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+table th, table td {
+  padding: 8px;
+  text-align: center;
+}
+table th {
+  background-color: white;
+  color: #333;
+}
+table td {
+  border-top: 1px solid #ddd;  /* 只保留上下的横线 */
+}
+table tr:first-child td {
+  border-top: none;  /* 去掉第一行的横线 */
+}
+table tr:last-child td {
+  border-bottom: none;  /* 去掉最后一行的横线 */
+}
+table td:first-child {
+  border-left: none; /* 去掉竖向的边框 */
+}
+table td:last-child {
+  border-right: none; /* 去掉竖向的边框 */
+}
+
+.loading {
+  font-size: 16px;
+  color: #555;
+}
+
+/* 模态框背景 */
+.modal {
+  display: none; /* 默认不显示 */
+  position: fixed;
+  z-index: 1; /* 确保在页面最上层 */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4); /* 背景为半透明黑色 */
+}
+
+/* 模态框内容 */
+.modal-content {
+  background-color: white;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 30%;
+  text-align: center;
+  border-radius: 10px;
+}
+
+/* 关闭按钮 */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* 输入框和按钮样式 */
+#snapshotName {
+  width: 80%;
+  padding: 8px;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+#sendSnapshotButton {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+#sendSnapshotButton:hover {
+  background-color: #0056b3;
+}
+
+button:hover {
+  color: darkblue;
+  text-decoration: none;
+}
