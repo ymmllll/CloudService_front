@@ -199,8 +199,6 @@ function recoverySnapshot(id,name,snapName){
 }
 
 function deleteSnapshot(id,name,snapName){
-  const url="qemu:///system";
-  const paras=new URLSearchParams({url:url,name:name,snapName:snapName})
   performSnapshot(`http://192.168.142.131:8080/snapshot-delete`,name,snapName);
   alert(`删除快照: ${snapName} (虚拟机：${name} ID: ${id})`);
   viewSnapshot(id,name);
