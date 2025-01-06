@@ -18,6 +18,10 @@ body {
   left: 0;
   z-index: 1000;
 }
+img{
+  height: 30px;
+
+}
 .system-name {
   font-size: 24px;
   font-weight: bold;
@@ -83,7 +87,7 @@ button {
   color: #2980b9;
   cursor: pointer;
   font-size: 14px;
-  border-radius: 13px;
+  border-radius: 15px;
 }
 
 button:hover {
@@ -99,6 +103,8 @@ table {
 table th, table td {
   padding: 8px;
   text-align: center;
+  font-size: 16px; /* 增大字体大小 */
+  line-height: 2; /* 增加行高，行距变大 */
 }
 table th {
   background-color: white;
@@ -145,7 +151,7 @@ table td:last-child {
   border: 1px solid #888;
   width: 30%;
   text-align: center;
-  border-radius: 10px;
+  border-radius: 15px;
 }
 
 /* 关闭按钮 */
@@ -164,7 +170,6 @@ table td:last-child {
   cursor: pointer;
 }
 
-/* 输入框和按钮样式 */
 #snapshotName {
   width: 80%;
   padding: 8px;
@@ -182,6 +187,26 @@ table td:last-child {
 }
 
 #sendSnapshotButton:hover {
+  background-color: #0056b3;
+}
+
+#vlanId {
+  width: 80%;
+  padding: 8px;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+#createVlanButton {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+#createVlanButton:hover {
   background-color: #0056b3;
 }
 

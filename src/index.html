@@ -9,7 +9,8 @@
 
 <body>
 <header class="header">
-  <span class="system-name">cloudservice</span>
+  <img src="img/1.png"/>
+  <span class="system-name">SwiftSky</span>
 </header>
 
 <div class="sidebar">
@@ -42,8 +43,19 @@
 
   <!-- VLAN划分 -->
   <div id="vlanDivision" class="page">
-    <h1>VLAN划分</h1>
-    <p>这里是VLAN划分的内容。</p>
+    <div class="buttons">
+      <button onclick="performAction2('create_vlan')">创建VLAN</button>
+    </div>
+    <table id="vlanTable" style="display: none;">
+      <thead>
+      <tr>
+        <th>VLAN名称</th>
+        <th>VLAN成员设备名称</th>
+      </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
   </div>
 </div>
 
@@ -71,6 +83,26 @@
     </table>
   </div>
 </div>
+
+<div id="createvlanModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>请输入虚拟局域网ID：</h2>
+    <input type="text" id="vlanId" placeholder="请输入vlan的ID" />
+    <table id="vmTable2" style="display: none;">
+      <thead>
+      <tr>
+        <th>虚拟机名称</th>
+        <th>选择</th>
+      </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <button id="createVlanButton">创建</button>
+  </div>
+</div>
+
 
 <script src="js/script.js">
 </script>

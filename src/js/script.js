@@ -3,6 +3,9 @@ function showPage(pageId) {
   const pages = document.querySelectorAll('.page');
   pages.forEach(page => page.classList.remove('active'));
   document.getElementById(pageId).classList.add('active');
+  if(pageId==="vlanDivision"){
+    loadVlanData();
+  }
 }
 
 // 获取虚拟机信息
@@ -11,17 +14,22 @@ async function loadVMData() {
   const vmTable = document.getElementById("vmTable");
   const tbody = vmTable.querySelector("tbody");
 
+  const vmTable2 = document.getElementById("vmTable2");
+  const tbody2 = vmTable2.querySelector("tbody");
+
   try {
     // 请求后端 API
-    const response = await fetch("http://192.168.142.131:8080/domains?url=qemu:///system");
+    const response = await fetch("http://192.168.119.129:8080/domains?url=qemu:///system");
     const vmData = await response.json();
 
     // 隐藏加载提示
     vmLoading.style.display = "none";
     vmTable.style.display = "table";
-
+    vmTable2.style.display = "table";
     // 填充表格数据
     tbody.innerHTML = ""; // 清空现有内容
+    tbody2.innerHTML="";
+
     vmData.forEach(vm => {
       const row = document.createElement("tr");
 
@@ -63,10 +71,66 @@ async function loadVMData() {
       row.appendChild(viewSnapshotButtonCell);
 
       tbody.appendChild(row);
+
+      const row2 = document.createElement("tr");
+      // 虚拟机名称
+      const nameCell2 = document.createElement("td");
+      nameCell2.textContent = vm.name;
+      row2.appendChild(nameCell2);
+
+      //多选框
+      const checkboxCell2 = document.createElement("td");
+      const checkbox2 = document.createElement("input");
+      checkbox2.type = "checkbox";  // 修改为 checkbox
+      checkbox2.value = vm.name;      // 每个复选框的值仍然是虚拟机的 ID
+      checkboxCell2.appendChild(checkbox2);
+      row2.appendChild(checkboxCell2);
+
+      tbody2.appendChild(row2);
+
     });
   } catch (error) {
     console.error("获取虚拟机数据失败:", error);
     vmLoading.textContent = "加载虚拟机信息失败，请检查网络或后端服务。";
+  }
+}
+
+async function loadVlanData(){
+  const vlantable=document.getElementById("vlanTable");
+  const tbody=vlantable.querySelector("tbody");
+  const url="qemu:///system";
+  try{
+    const response=await fetch(`http://192.168.119.129:8080/listVlans?url=qemu:///system`);
+    const vlandatas=await response.json();
+    //console.log(vlandatas);
+
+    vlantable.style.display="table";
+    tbody.innerHTML="";
+
+    vlandatas.forEach(vlandata=>{
+      vlandata.vmname.forEach(single_vmname=>{
+        const row=document.createElement("tr");
+
+        const vlanNameCell=document.createElement("td");
+        vlanNameCell.textContent=vlandata.name;
+        row.appendChild(vlanNameCell);
+
+        const nameCell=document.createElement("td");
+        nameCell.textContent=single_vmname;
+        row.appendChild(nameCell);
+
+        const deleteButtonCell=document.createElement("td");
+        const deleteButton =document.createElement("button");
+        deleteButton.textContent="删除";
+        deleteButton.addEventListener("click", ()=>delete_single_vlan("http://192.168.119.129:8080/removeVlanInterface",single_vmname,vlandata.name));
+        deleteButtonCell.appendChild(deleteButton);
+        row.appendChild(deleteButtonCell);
+
+        tbody.appendChild(row);
+      })
+    })
+  }catch(error){
+    console.log(error);
   }
 }
 
@@ -127,10 +191,25 @@ function getSelectedVM() {
   return { id: selectedVMId, name: selectedVMName };
 }
 
+function getSelectedVMs() {
+  // 获取所有选中的复选框
+  const selectedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+
+  // 如果没有选中的复选框，返回一个提示信息
+  if (selectedCheckboxes.length === 0) {
+    alert("请选择至少一个虚拟机！");
+    return [];
+  }
+
+  // 提取所有选中的复选框的值
+  const selectedVMIds = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+  return selectedVMIds;
+}
+
+
 // 执行不同的操作
 function performAction(action) {
   const selectedVM = getSelectedVM();
-
   if (!selectedVM) return; // 如果没有选中虚拟机，直接返回
 
   const { id, name } = selectedVM;
@@ -161,13 +240,20 @@ function performAction(action) {
       changeVm("http://192.168.142.131:8080/resume",name);
       alert(`虚拟机 ${name} 已恢复`);
       break;
-    case 'detail':
-      console.log('show detail');
-      break;
     default:
       console.error('未知操作:', action);
   }
   loadVMData();
+}
+
+function performAction2(action){
+  switch (action) {
+    case 'create_vlan':
+      createVlan();
+      break;
+    default:
+      console.error("未知操作：",action);
+  }
 }
 
 function createSnapshot(vmId, vmName) {
@@ -199,6 +285,8 @@ function recoverySnapshot(id,name,snapName){
 }
 
 function deleteSnapshot(id,name,snapName){
+  const url="qemu:///system";
+  const paras=new URLSearchParams({url:url,name:name,snapName:snapName})
   performSnapshot(`http://192.168.142.131:8080/snapshot-delete`,name,snapName);
   alert(`删除快照: ${snapName} (虚拟机：${name} ID: ${id})`);
   viewSnapshot(id,name);
@@ -275,6 +363,68 @@ async function performSnapshot(baseurl,name,snapName){
   } catch (error) {
     console.error("请求失败", error);
   }
+}
+
+function createVlan() {
+  // 显示模态框
+  const modal = document.getElementById("createvlanModal");
+  modal.style.display = "block";
+
+  // 关闭模态框
+  const closeBtn = modal.querySelector(".close");
+  closeBtn.onclick = () => {
+    modal.style.display = "none";
+  };
+  // 发送按钮逻辑
+  sendButton = document.getElementById("createVlanButton");
+  sendButton.onclick = () => {
+    const vmnames=getSelectedVMs();
+    const vlanId = document.getElementById("vlanId").value;
+    if (vlanId.trim() === "") {
+      alert("VLAN的id不能为空！");
+      return;
+    }
+    vmnames.forEach(vmname=>{
+      create_single_vlan("http://192.168.119.129:8080/addVlanInterface",vmname,vlanId);
+    })
+    alert(`创建VLAN: ${vlanId} (虚拟机：${vmnames} ID: ${vlanId})`);
+    loadVlanData();
+    modal.style.display = "none"; // 关闭模态框
+  };
+}
+
+function create_single_vlan(baseurl,vmname,vlanId){
+  fetch(baseurl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      url:'qemu:///system',
+      name: vmname,
+      vlanId: vlanId
+    })
+  })
+    .then(response => response.json())
+    .then(data => console.log(data));
+}
+
+function delete_single_vlan(baseurl,vmname,vlanName){
+  fetch(baseurl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      url:'qemu:///system',
+      name: vmname,
+      networkName: vlanName
+    })
+  })
+    .then(response => response.json())
+    .then(data => console.log(data));
+  alert(`删除VLAN:(VLAN名称：${vlanName} ,虚拟机名称： ${vmname})`);
+  loadVlanData();
 }
 
 // 加载虚拟机数据时触发
