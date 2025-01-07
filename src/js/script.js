@@ -393,38 +393,29 @@ function createVlan() {
   };
 }
 
-function create_single_vlan(baseurl,vmname,vlanId){
-  fetch(baseurl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      url:'qemu:///system',
-      name: vmname,
-      vlanId: vlanId
-    })
-  })
-    .then(response => response.json())
-    .then(data => console.log(data));
+async function create_single_vlan(baseurl,vmname,vlanId){
+  try{
+    const url="qemu:///system";
+    const params = new URLSearchParams({ url: url, name: vmname,vlanId:vlanId});
+    const response = await fetch(`${baseurl}?${params.toString()}`);
+    const vmData = await response.json();
+    console.log(vmData);
+  }catch(error){
+    console.log(error);
+  }
 }
 
-function delete_single_vlan(baseurl,vmname,vlanName){
-  fetch(baseurl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      url:'qemu:///system',
-      name: vmname,
-      networkName: vlanName
-    })
-  })
-    .then(response => response.json())
-    .then(data => console.log(data));
-  alert(`删除VLAN:(VLAN名称：${vlanName} ,虚拟机名称： ${vmname})`);
-  loadVlanData();
+async function delete_single_vlan(baseurl,vmname,vlanName){
+  try{
+    const url="qemu:///system";
+    const params = new URLSearchParams({ url: url, name: vmname,networkName:vlanName});
+    const response = await fetch(`${baseurl}?${params}`);
+    const vmData = await response.json();
+    console.log(vmData);
+    loadVlanData();
+  }catch(error){
+    console.log(error);
+  }
 }
 
 // 加载虚拟机数据时触发
