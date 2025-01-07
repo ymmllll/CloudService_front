@@ -100,7 +100,7 @@ async function loadVlanData(){
   const tbody=vlantable.querySelector("tbody");
   const url="qemu:///system";
   try{
-    const response=await fetch(`http://192.168.119.129:8080/listVlans?url=qemu:///system`);
+    const response=await fetch(`http://192.168.122.1:8080/listVlans?url=qemu:///system`);
     const vlandatas=await response.json();
     //console.log(vlandatas);
 
@@ -108,7 +108,7 @@ async function loadVlanData(){
     tbody.innerHTML="";
 
     vlandatas.forEach(vlandata=>{
-      vlandata.vmname.forEach(single_vmname=>{
+      vlandata.domains.forEach(domain=>{
         const row=document.createElement("tr");
 
         const vlanNameCell=document.createElement("td");
@@ -116,13 +116,13 @@ async function loadVlanData(){
         row.appendChild(vlanNameCell);
 
         const nameCell=document.createElement("td");
-        nameCell.textContent=single_vmname;
+        nameCell.textContent=domain.name;
         row.appendChild(nameCell);
 
         const deleteButtonCell=document.createElement("td");
         const deleteButton =document.createElement("button");
         deleteButton.textContent="删除";
-        deleteButton.addEventListener("click", ()=>delete_single_vlan("http://192.168.119.129:8080/removeVlanInterface",single_vmname,vlandata.name));
+        deleteButton.addEventListener("click", ()=>delete_single_vlan("http://192.168.119.129:8080/removeVlanInterface",domain.name,vlandata.name));
         deleteButtonCell.appendChild(deleteButton);
         row.appendChild(deleteButtonCell);
 
